@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ascending Aortic Area Calculator</title>
+
+    <!-- Pico.css -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
+    />
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <!-- Header -->
+      <header>
+        <h1>Ascending Aortic Area Calculator</h1>
+        <p>Normative values based on allometric scaling</p>
+      </header>
+
+      <!-- Input Section -->
+      <section>
+        <h2>Patient Information</h2>
+        <form id="calculatorForm">
+          <!-- Age Input -->
+          <div>
+            <label for="age">
+              Age (years)
+              <input
+                type="number"
+                id="age"
+                name="age"
+                min="0"
+                max="120"
+                required
+              />
+            </label>
+            <small id="ageWarning" class="warning-text" style="display: none">
+              ⚠️ Normative values derived from ages 40-70 years
+            </small>
+          </div>
+
+          <!-- Height Input -->
+          <div>
+            <label>Height</label>
+            <div class="grid">
+              <input
+                type="number"
+                id="height"
+                name="height"
+                step="0.1"
+                required
+              />
+              <fieldset role="group">
+                <label>
+                  <input type="radio" name="heightUnit" value="cm" checked />
+                  cm
+                </label>
+                <label>
+                  <input type="radio" name="heightUnit" value="inches" />
+                  inches
+                </label>
+              </fieldset>
+            </div>
+            <small id="heightConversion"></small>
+            <small
+              id="heightWarning"
+              class="warning-text"
+              style="display: none"
+            >
+              ⚠️ Valid range approximately 140-210 cm (55-83 inches)
+            </small>
+          </div>
+
+          <!-- Measured Value (Expanded by default) -->
+          <div>
+            <h3>Your Measured Value (Optional)</h3>
+            <fieldset>
+              <label>
+                <input
+                  type="radio"
+                  name="measuredType"
+                  value="diameter"
+                  checked
+                />
+                Diameter (cm)
+              </label>
+              <label>
+                <input type="radio" name="measuredType" value="area" />
+                Area (cm²)
+              </label>
+            </fieldset>
+            <input
+              type="number"
+              id="measuredValue"
+              step="0.01"
+              min="0"
+              placeholder="Enter value"
+            />
+            <small id="measuredConversion"></small>
+          </div>
+
+          <button type="submit">Calculate</button>
+        </form>
+      </section>
+
+      <!-- Results Section -->
+      <section id="results" style="display: none">
+        <!-- Chart Section MOVED UP -->
+        <div id="chartSection">
+          <h2>Normative Values Across Height Range</h2>
+
+          <fieldset role="group">
+            <label>
+              <input
+                type="radio"
+                name="chartType"
+                value="area"
+                id="chartTypeArea"
+              />
+              Show Area (cm²)
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="chartType"
+                value="diameter"
+                id="chartTypeDiameter"
+              />
+              Show Diameter (cm)
+            </label>
+          </fieldset>
+
+          <div class="chart-container">
+            <canvas id="normativeChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Numerical Results MOVED DOWN -->
+        <h2>Normative Upper Limits (97.5th Percentile)</h2>
+
+        <div class="grid">
+          <!-- Female Results -->
+          <article>
+            <h3>Female</h3>
+            <table>
+              <tbody>
+                <tr>
+                  <td><strong>Area/Height Index</strong></td>
+                  <td><span id="femaleIndex"></span> cm²/m</td>
+                </tr>
+                <tr>
+                  <td>Area</td>
+                  <td><span id="femaleArea"></span> cm²</td>
+                </tr>
+                <tr>
+                  <td>Diameter</td>
+                  <td><span id="femaleDiameter"></span> cm</td>
+                </tr>
+              </tbody>
+            </table>
+            <small><strong>Formula:</strong> age × 0.0327 + 3.68</small>
+          </article>
+
+          <!-- Male Results -->
+          <article>
+            <h3>Male</h3>
+            <table>
+              <tbody>
+                <tr>
+                  <td><strong>Area/Height Index</strong></td>
+                  <td><span id="maleIndex"></span> cm²/m</td>
+                </tr>
+                <tr>
+                  <td>Area</td>
+                  <td><span id="maleArea"></span> cm²</td>
+                </tr>
+                <tr>
+                  <td>Diameter</td>
+                  <td><span id="maleDiameter"></span> cm</td>
+                </tr>
+              </tbody>
+            </table>
+            <small><strong>Formula:</strong> age × 0.04 + 3.74</small>
+          </article>
+        </div>
+
+        <!-- User's Measured Value Comparison -->
+        <article id="userComparison" style="display: none">
+          <h3>Your Measurement</h3>
+          <p>
+            <strong>Diameter:</strong> <span id="userDiameter"></span> cm
+            (<strong>Area:</strong> <span id="userArea"></span> cm²)
+          </p>
+          <p>
+            <strong>Your area/height index:</strong>
+            <span id="userIndex"></span> cm²/m
+          </p>
+
+          <div>
+            <h4>Compared to Female Upper Limit</h4>
+            <p>
+              <strong><span id="femaleComparison"></span></strong>
+            </p>
+          </div>
+
+          <div>
+            <h4>Compared to Male Upper Limit</h4>
+            <p>
+              <strong><span id="maleComparison"></span></strong>
+            </p>
+          </div>
+        </article>
+      </section>
+      <!-- Chart Section -->
+      <section id="chartSection" style="display: none">
+        <h2>Normative Values Across Height Range</h2>
+
+        <fieldset role="group">
+          <label>
+            <input type="radio" name="chartType" value="area" checked />
+            Show Area (cm²)
+          </label>
+          <label>
+            <input type="radio" name="chartType" value="diameter" />
+            Show Diameter (cm)
+          </label>
+        </fieldset>
+
+        <div class="chart-container">
+          <canvas id="normativeChart"></canvas>
+        </div>
+      </section>
+
+      <!-- About Section -->
+      <!-- About Section -->
+      <details>
+        <summary><h2>About Allometric Scaling</h2></summary>
+        <article>
+          <h3>Why Area/Height?</h3>
+          <p>
+            Simple ratios like diameter/height or diameter/BSA don't properly
+            account for the natural relationship between aortic size and body
+            size. These relationships are
+            <strong>nonlinear</strong>, meaning they systematically overestimate
+            or underestimate aortic dilation at the extremes of body size.
+          </p>
+          <p>
+            This study found that the
+            <strong
+              >area/height ratio exhibits an approximately linear
+              relationship</strong
+            >
+            (allometric exponent ≈ 1.0), making it the most appropriate index
+            for normalizing ascending aortic dimensions across different body
+            sizes.
+          </p>
+
+          <h3>Methodology</h3>
+          <ul>
+            <li>
+              <strong>Imaging:</strong> Cardiac MRI (CMR) using steady-state
+              free precession (SSFP)
+            </li>
+            <li>
+              <strong>Cohort:</strong> UK Biobank participants with available
+              CMR imaging
+            </li>
+            <li>
+              <strong>Reference group:</strong> Healthy subgroup (n = 11,310;
+              age 52 ± 8 years; 37% male) selected from the UK Biobank with no
+              cardiovascular disease, BMI &lt; 30 kg/m², normal lipids, and
+              never smokers
+            </li>
+            <li>
+              <strong>Upper limit:</strong> 97.5th percentile in the reference
+              population
+            </li>
+            <li>
+              <strong>Age range:</strong> Normative values derived from
+              participants aged 40-70 years
+            </li>
+          </ul>
+
+          <h3>Study Population</h3>
+          <p>
+            The normative values presented in this calculator are based on the
+            UK Biobank reference subgroup. The original study also validated
+            findings in the Penn Medicine BioBank (using CT imaging),
+            demonstrating consistent allometric relationships across different
+            imaging modalities and populations.
+          </p>
+
+          <h3>Citation</h3>
+          <p>
+            Tavolinejad, H., Beeche, C., Dib, M.-J., Pourmussa, B., Damrauer, S.
+            M., DePaolo, J., Azzo, J. D., Salman, O., Duda, J., Gee, J., Kun,
+            S., Witschey, W. R., & Chirinos, J. A. (2025). Ascending Aortic
+            Dimensions and Body Size: Allometric Scaling, Normative Values, and
+            Prognostic Performance. <em>JACC: Cardiovascular Imaging</em>.
+            <a
+              href="https://doi.org/10.1016/j.jcmg.2025.06.019"
+              target="_blank"
+            >
+              https://doi.org/10.1016/j.jcmg.2025.06.019
+            </a>
+          </p>
+        </article>
+      </details>
+      <!-- Important Limitations -->
+      <article class="warning">
+        <h4>⚠️ Important Limitations</h4>
+        <ul>
+          <li>
+            These values are specific to <strong>CMR SSFP imaging</strong>
+          </li>
+          <li>Normative data derived from ages <strong>40-70 years</strong></li>
+          <li>
+            Based on healthy reference population (no CVD, BMI&lt;30, etc.)
+          </li>
+          <li>CT imaging may yield different absolute values</li>
+          <li>
+            <strong>For educational purposes only</strong> - not for clinical
+            decision-making
+          </li>
+          <li>Consult appropriate clinical guidelines and specialists</li>
+        </ul>
+      </article>
+
+      <!-- Footer -->
+      <footer>
+        <p>
+          <small>
+            <strong>Created by:</strong>
+            <a
+              href="https://www.linkedin.com/in/dan-dyar-ma-acs-rdcs-ae-pe-fe-fase/"
+              target="_blank"
+            >
+              Dan Dyar, MA, ACS, RDCS, FASE </a
+            ><br />
+            Version 1.0 | 12 November 2025<br />
+            Source code available on
+            <a
+              href="https://github.com/yourusername/ascending-aorta-calculator"
+              target="_blank"
+              >GitHub</a
+            >
+          </small>
+        </p>
+      </footer>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>

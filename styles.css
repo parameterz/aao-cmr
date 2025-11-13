@@ -1,0 +1,71 @@
+/* styles.css */
+
+/* Chart container */
+.chart-container {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    margin: 2rem 0;
+}
+
+/* Warning styling */
+.warning {
+    background-color: #fff3cd;
+    border-left: 4px solid #ffc107;
+    margin-top: 2rem;
+}
+
+.warning-text {
+    color: #856404;
+    font-weight: 600;
+}
+
+/* Mobile stacking */
+@media (max-width: 768px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .chart-container canvas {
+        max-height: 400px;
+    }
+}
+
+/* Table styling improvements */
+table td:first-child {
+    font-weight: 500;
+}
+
+table td:last-child {
+    text-align: right;
+}
+
+/* Details/summary styling */
+details summary {
+    cursor: pointer;
+}
+
+details summary h2 {
+    display: inline;
+}
+
+/* Footer styling */
+footer {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid #dee2e6;
+    text-align: center;
+}
+
+/* Comparison results styling */
+#userComparison h4 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+#userComparison > div {
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+}

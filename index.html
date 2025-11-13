@@ -239,31 +239,45 @@
       </section>
 
       <!-- About Section -->
-      <!-- About Section -->
       <details>
-        <summary><h2>About Allometric Scaling</h2></summary>
+        <summary><h2>About</h2></summary>
         <article>
           <h3>Why Area/Height?</h3>
           <p>
-            Simple ratios like diameter/height or diameter/BSA don't properly
-            account for the natural relationship between aortic size and body
-            size. These relationships are
-            <strong>nonlinear</strong>, meaning they systematically overestimate
-            or underestimate aortic dilation at the extremes of body size.
+            Ascending aortic dimensions need to be normalized for body size to
+            avoid misclassification, particularly at the extremes of height.
+            However,
+            <strong>not all normalization methods work equally well</strong>.
+            Commonly used indices like diameter/height and diameter/BSA appear
+            straightforward, but when tested empirically, they leave significant
+            <strong>residual associations with body size</strong> - meaning they
+            don't fully account for body size.
           </p>
           <p>
-            This study found that the
-            <strong
-              >area/height ratio exhibits an approximately linear
-              relationship</strong
-            >
-            (allometric exponent ≈ 1.0), making it the most appropriate index
+            This study used <strong>allometric scaling analysis</strong> to
+            determine which normalization method properly removes these residual
+            body size effects. The researchers tested the relationship between
+            aortic dimensions and body size metrics (height and BSA) in healthy
+            reference populations, calculating allometric exponents to
+            characterize these relationships.
+          </p>
+          <p>
+            <strong>Key finding:</strong> The area/height relationship exhibited
+            an allometric exponent of approximately 1.0 (95% CI: 0.93-1.15 in UK
+            Biobank; 0.65-1.58 in Penn Medicine BioBank). An exponent of 1.0
+            means that aortic area scales linearly with height, making a simple
+            ratio appropriate. In contrast, diameter/height and diameter/BSA had
+            exponents significantly different from 1.0, indicating nonlinear
+            relationships that cannot be properly normalized with simple ratios.
+          </p>
+          <p>
+            Most importantly, after indexing by area/height, there was
+            <strong>no residual association with body size</strong> (R² = 0.04,
+            P = 0.41 in UK Biobank), confirming it as an appropriate index
             for normalizing ascending aortic dimensions across different body
             sizes.
           </p>
-
           <h3>Methodology</h3>
-          <ul>
             <li>
               <strong>Imaging:</strong> Cardiac MRI (CMR) using steady-state
               free precession (SSFP)
@@ -314,6 +328,8 @@
         </article>
       </details>
       <!-- Important Limitations -->
+       <details>
+      <summary><h2>Limitations</h2></summary>
       <article class="warning">
         <h4>⚠️ Important Limitations</h4>
         <ul>
@@ -332,6 +348,7 @@
           <li>Consult appropriate clinical guidelines and specialists</li>
         </ul>
       </article>
+      </details>
 
       <!-- Footer -->
       <footer>
@@ -344,7 +361,7 @@
             >
               Dan Dyar, MA, ACS, RDCS, FASE </a
             ><br />
-            Version 1.0 | 12 November 2025<br />
+            Version 1.1 | 13 November 2025<br />
           </small>
         </p>
       </footer>

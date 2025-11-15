@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ascending Aortic Area Calculator</title>
+    <title>Ascending Aortic Area Normal Values by CMR</title>
 
     <!-- Pico.css -->
     <link
@@ -21,7 +21,7 @@
       <!-- Header -->
       <header>
         <h1>Ascending Aortic Area Calculator</h1>
-        <p>Normative values based on allometric scaling</p>
+        <p>Allometrically scaled normative values of the ascending aorta using axial CMR 3D reconstruction</p>
       </header>
 
       <!-- Input Section -->
@@ -218,25 +218,6 @@
           </div>
         </article>
       </section>
-      <!-- Chart Section -->
-      <section id="chartSection" style="display: none">
-        <h2>Normative Values Across Height Range</h2>
-
-        <fieldset role="group">
-          <label>
-            <input type="radio" name="chartType" value="area" checked />
-            Show Area (cm²)
-          </label>
-          <label>
-            <input type="radio" name="chartType" value="diameter" />
-            Show Diameter (cm)
-          </label>
-        </fieldset>
-
-        <div class="chart-container">
-          <canvas id="normativeChart"></canvas>
-        </div>
-      </section>
 
       <!-- About Section -->
       <details>
@@ -276,11 +257,27 @@
             P = 0.41 in UK Biobank), confirming it as an appropriate index for
             normalizing ascending aortic dimensions across different body sizes.
           </p>
+
           <h3>Methodology</h3>
           <ul>
             <li>
               <strong>Imaging:</strong> Cardiac MRI (CMR) using axial scout steady-state
               free precession (SSFP) image reconstructions
+            </li>
+            <li>
+              <strong>3D Reconstruction:</strong> Axial CMR images were processed and 
+              combined to generate three-dimensional aortic segmentation. The aortic 
+              centerline was defined using linear interpolation with 100 points, and 
+              cross-sectional measurements were calculated at each point along the centerline.
+            </li>
+            <li>
+              <strong>Measurement location:</strong> The <strong>maximum diameter and 
+              cross-sectional area</strong> within the ascending aorta (AscAo) were used. 
+              The AscAo was defined as the segment extending from the aortic root to the 
+              apex of the aortic arch. <em>Note: This approach identifies the largest 
+              dimension regardless of anatomic location, which may differ from protocols 
+              that measure at fixed anatomic landmarks (e.g., sinotubular junction, 
+              mid-ascending aorta).</em>
             </li>
             <li>
               <strong>Cohort:</strong> UK Biobank participants with available
@@ -318,7 +315,7 @@
             S., Witschey, W. R., & Chirinos, J. A. (2025). Ascending Aortic
             Dimensions and Body Size: Allometric Scaling, Normative Values, and
             Prognostic Performance. <em>JACC: Cardiovascular Imaging</em>.
-            <a
+            
               href="https://doi.org/10.1016/j.jcmg.2025.06.019"
               target="_blank"
             >
@@ -327,6 +324,7 @@
           </p>
         </article>
       </details>
+
       <!-- Important Limitations -->
       <details>
         <summary><h2>Limitations</h2></summary>
@@ -337,7 +335,13 @@
               These values are specific to <strong>chest axial scout SSFP CMR image reconstructions</strong> (specifications in the citation)
             </li>
             <li>
+              Measurements are based on the <strong>maximum diameter/area</strong> 
+              anywhere in the ascending aorta, which may not be directly comparable 
+              to measurements at fixed anatomic landmarks
+            </li>
+            <li>
               The area/diameter relationship assumes a circular cross-section
+            </li>
             <li>
               Normative data derived from ages <strong>40-70 years</strong>
             </li>
@@ -359,13 +363,13 @@
         <p>
           <small>
             <strong>Created by:</strong>
-            <a
-              href="https://www.linkedin.com/in/dan-dyar-ma-acs-rdcs-ae-pe-fe-fase/"
+            
+             <a href="https://www.linkedin.com/in/dan-dyar-ma-acs-rdcs-ae-pe-fe-fase/"
               target="_blank"
             >
               Dan Dyar, MA, ACS, RDCS, FASE </a
             ><br />
-            Version 1.2 | 13 November 2025<br />
+            Version 1.3 | 15 November 2025<br />
           </small>
         </p>
       </footer>

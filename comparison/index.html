@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AAo Reference Comparison - CMR vs Echo</title>
+
+    <!-- Pico.css -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
+    />
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+
+    <link rel="stylesheet" href="../styles.css" />
+    <style>
+      .slider-container {
+        margin: 1rem 0;
+      }
+      .slider-value {
+        font-weight: bold;
+        color: #1095c1;
+      }
+      .reference-legend {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin: 1rem 0;
+      }
+      .reference-legend span {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .legend-color {
+        width: 30px;
+        height: 3px;
+        display: inline-block;
+      }
+      .legend-jacc { background: rgb(34, 197, 94); }
+      .legend-norre { background: rgb(219, 39, 119); }
+      .legend-ase { background: rgb(59, 130, 246); }
+      .legend-dashed { 
+        background: repeating-linear-gradient(
+          to right,
+          rgb(219, 39, 119) 0px,
+          rgb(219, 39, 119) 5px,
+          transparent 5px,
+          transparent 10px
+        );
+      }
+      .legend-dotted {
+        background: repeating-linear-gradient(
+          to right,
+          rgb(59, 130, 246) 0px,
+          rgb(59, 130, 246) 3px,
+          transparent 3px,
+          transparent 8px
+        );
+      }
+    </style>
+  </head>
+  <body>
+    <main class="container">
+      <!-- Header -->
+      <header>
+        <nav>
+          <ul>
+            <li><a href="../index.html">← Back to Main Calculator</a></li>
+          </ul>
+        </nav>
+        <h1>Ascending Aorta ULN Reference Comparison</h1>
+        <p>Compare CMR (JACC) and Echo (NORRE, ASE) upper limit normative values across height ranges</p>
+      </header>
+
+      <!-- Results Section - CHART AT TOP -->
+      <section id="chartSection">
+        <h2>Ascending Aorta ULN Comparison Across Height Range</h2>
+        
+        <div class="reference-legend">
+          <span><div class="legend-color legend-jacc"></div>JACC (CMR) - Area/Height</span>
+          <span><div class="legend-color legend-dashed"></div>NORRE (Echo) - Height-indexed</span>
+          <span><div class="legend-color legend-dotted"></div>ASE (Echo) - BSA-indexed</span>
+        </div>
+
+        <div class="chart-container">
+          <canvas id="comparisonChart"></canvas>
+        </div>
+      </section>
+
+      <!-- Input Section - FORM BELOW -->
+      <section>
+        <h2>Adjust Parameters</h2>
+        <form id="comparisonForm">
+          <!-- Age Slider -->
+          <div class="slider-container">
+            <label for="age">
+              Age: <span class="slider-value" id="ageValue">52</span> years
+            </label>
+            <input
+              type="range"
+              id="age"
+              name="age"
+              min="40"
+              max="70"
+              value="52"
+              step="1"
+            />
+            <small>Age affects JACC (CMR) values only</small>
+          </div>
+
+          <!-- Sex -->
+          <div>
+            <label>Sex</label>
+            <fieldset role="group">
+              <label>
+                <input type="radio" name="sex" value="female" checked />
+                Female
+              </label>
+              <label>
+                <input type="radio" name="sex" value="male" />
+                Male
+              </label>
+            </fieldset>
+          </div>
+
+          <!-- Height -->
+          <div>
+            <label>Height</label>
+            <div class="grid">
+              <input
+                type="number"
+                id="height"
+                name="height"
+                value="165"
+                step="0.1"
+                required
+              />
+              <fieldset role="group">
+                <label>
+                  <input type="radio" name="heightUnit" value="cm" checked />
+                  cm
+                </label>
+                <label>
+                  <input type="radio" name="heightUnit" value="inches" />
+                  inches
+                </label>
+              </fieldset>
+            </div>
+            <small id="heightConversion"></small>
+          </div>
+
+          <!-- Weight -->
+          <div>
+            <label>Weight</label>
+            <div class="grid">
+              <input
+                type="number"
+                id="weight"
+                name="weight"
+                value="65"
+                step="0.1"
+                required
+              />
+              <fieldset role="group">
+                <label>
+                  <input type="radio" name="weightUnit" value="kg" checked />
+                  kg
+                </label>
+                <label>
+                  <input type="radio" name="weightUnit" value="lbs" />
+                  lbs
+                </label>
+              </fieldset>
+            </div>
+            <small id="weightConversion"></small>
+          </div>
+
+          <button type="submit">Update Comparison</button>
+        </form>
+
+        <!-- Values Table -->
+        <h3 style="margin-top: 2rem;">ULN Values at Your Measurements</h3>
+        <article>
+          <table>
+            <thead>
+              <tr>
+                <th>Reference</th>
+                <th>Indexing Method</th>
+                <th>ULN (cm)</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>JACC (CMR)</strong></td>
+                <td>Area/Height</td>
+                <td><strong><span id="jaccValue"></span></strong></td>
+                <td>Age-dependent</td>
+              </tr>
+              <tr>
+                <td><strong>NORRE (Echo)</strong></td>
+                <td>Height-indexed</td>
+                <td><strong><span id="norreValue"></span></strong></td>
+                <td>Height-dependent only</td>
+              </tr>
+              <tr>
+                <td><strong>ASE (Echo)</strong></td>
+                <td>BSA-indexed</td>
+                <td><strong><span id="aseValue"></span></strong></td>
+                <td>BSA: <span id="bsaValue"></span> m²</td>
+              </tr>
+            </tbody>
+          </table>
+        </article>
+      </section>
+
+      <!-- Info Section -->
+      <details open>
+        <summary><h2>Understanding This Comparison</h2></summary>
+        <article>
+          <h3>Why These Differ</h3>
+          <p>
+            The three reference standards use different indexing methods to normalize 
+            ascending aortic dimensions for body size. This comparison intends to demonstrate
+            <strong>the effect of the indexing method itself</strong>, independent of 
+            imaging modality differences. Although a bias may exist between CMR and echo measurements,
+            the fact that these lines have different shapes and slopes is primarily due to
+            how body size is accounted for in each reference.
+          </p>
+
+          <h3>Key Insights</h3>
+          <ul>
+            <li>
+              <strong>JACC (CMR):</strong> Uses area/height indexing with age dependency. 
+              The area/height ratio has an allometric exponent of ~1.0, meaning aortic 
+              area scales linearly with height. Age is incorporated directly into the 
+              prediction equation.
+            </li>
+            <li>
+              <strong>NORRE (Echo):</strong> Height-indexed values (diameter/height ratio). 
+              Creates a straight line relationship - diameter increases proportionally 
+              with height. No age adjustment in the reference values.
+            </li>
+            <li>
+              <strong>ASE (Echo):</strong> BSA-indexed using the DuBois formula. BSA 
+              incorporates both height and weight, creating a curved relationship. 
+              No age component in these reference values.
+            </li>
+          </ul>
+
+          <h3>Clinical Takeaway</h3>
+          <p>
+            Different indexing methods can produce significantly different upper limit 
+            values, especially at the extremes of height. This underscores the importance 
+            of understanding which reference standard was used and how body size indexing 
+            affects the interpretation of measurements.
+          </p>
+
+          <h3>Citations</h3>
+          <ol>
+            <li>
+              <strong>JACC (CMR):</strong> Tavolinejad, H., Beeche, C., Dib, M.-J., 
+              Pourmussa, B., Damrauer, S. M., DePaolo, J., Azzo, J. D., Salman, O., 
+              Duda, J., Gee, J., Kun, S., Witschey, W. R., & Chirinos, J. A. (2025). 
+              Ascending Aortic Dimensions and Body Size: Allometric Scaling, Normative 
+              Values, and Prognostic Performance. <em>JACC: Cardiovascular Imaging</em>. 
+              <a href="https://doi.org/10.1016/j.jcmg.2025.06.019" target="_blank">
+                https://doi.org/10.1016/j.jcmg.2025.06.019
+              </a>
+            </li>
+            <li>
+              <strong>NORRE (Echo):</strong> Saura, D., Dulgheru, R., Caballero, L., 
+              Bernard, A., Kou, S., et al. (2017). Two-dimensional transthoracic 
+              echocardiographic normal reference ranges for proximal aorta dimensions: 
+              results from the EACVI NORRE study. <em>European Heart Journal - 
+              Cardiovascular Imaging</em>, 18(2), 167-179. 
+              <a href="https://doi.org/10.1093/ehjci/jew053" target="_blank">
+                https://doi.org/10.1093/ehjci/jew053
+              </a>
+            </li>
+            <li>
+              <strong>ASE (Echo):</strong> Lang, R. M., Badano, L. P., Mor-Avi, V., 
+              Afilalo, J., Armstrong, A., Ernande, L., Flachskampf, F. A., Foster, E., 
+              Goldstein, S. A., Kuznetsova, T., Lancellotti, P., Muraru, D., Picard, M. H., 
+              Rietzschel, E. R., Rudski, L., Spencer, K. T., Tsang, W., & Voigt, J. U. (2015). 
+              Recommendations for cardiac chamber quantification by echocardiography in 
+              adults: an update from the American Society of Echocardiography and the 
+              European Association of Cardiovascular Imaging. <em>Journal of the American 
+              Society of Echocardiography</em>, 28(1), 1-39.e14. 
+              <a href="https://doi.org/10.1016/j.echo.2014.10.003" target="_blank">
+                https://doi.org/10.1016/j.echo.2014.10.003
+              </a> PMID: 25559473.
+            </li>
+          </ol>
+        </article>
+      </details>
+
+      <!-- Disclaimer -->
+      <details>
+        <summary><h2>Important Limitations</h2></summary>
+        <article class="warning">
+          <h4>⚠️ Critical Considerations</h4>
+          <ul>
+            <li>
+              <strong>Cross-modality comparison:</strong> CMR and echocardiography may 
+              yield different absolute measurement values due to differences in imaging 
+              technique, resolution, and measurement conventions.
+            </li>
+            <li>
+              <strong>Measurement location:</strong> JACC uses maximum diameter anywhere 
+              in the ascending aorta from 3D reconstruction. NORRE and ASE use specific 
+              anatomic landmarks in 2D imaging.
+            </li>
+            <li>
+              <strong>Different populations:</strong> Each reference was derived from 
+              different study populations with varying demographics and inclusion criteria.
+            </li>
+            <li>
+              <strong>Measurement conventions:</strong> JACC reports cross-sectional area 
+              (converted to diameter here), while echo studies directly measure diameter.
+            </li>
+            <li>
+              <strong>For educational purposes only</strong> - This tool demonstrates 
+              methodological differences and should not be used for clinical decision-making 
+              without appropriate clinical context and specialist consultation.
+            </li>
+          </ul>
+        </article>
+      </details>
+
+      <!-- Footer -->
+      <footer>
+        <p>
+          <small>
+            <strong>Created by:</strong>
+            <a href="https://www.linkedin.com/in/dan-dyar-ma-acs-rdcs-ae-pe-fe-fase/"
+              target="_blank">
+              Dan Dyar, MA, ACS, RDCS, FASE
+            </a><br />
+            Version 1.3 | 15 November 2025
+          </small>
+        </p>
+      </footer>
+    </main>
+
+    <script src="comparison.js"></script>
+  </body>
+</html>

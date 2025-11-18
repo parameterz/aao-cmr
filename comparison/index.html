@@ -67,6 +67,20 @@
         );
       }
     </style>
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-BS3P8MDC84"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "G-BS3P8MDC84");
+    </script>
   </head>
   <body>
     <main class="container">
@@ -249,22 +263,22 @@
             <em
               >This comparison demonstrates how different body size indexing
               methods produce different upper limit values, even when starting
-              from similar populations.
-              This is not an exhaustive review of all available aortic
-                references, but rather an illustration of three distinct
-                approaches to body size scaling.
+              from similar populations. This is not an exhaustive review of all
+              available aortic references, but rather an illustration of three
+              distinct approaches to body size scaling.
             </em>
           </p>
           <h3>How I Did This</h3>
           <p>
             Over the range of heights, a weight was calculated based on a BMI of
-            24; the DuBois equation was then used to calculate BSA.
-              Since BSA depends on both height and weight, this 
-              allows the ASE's BSA-indexed reference values to be plotted across the height range
-              alongside the other height-indexed references.
+            24; the DuBois equation was then used to calculate BSA. Since BSA
+            depends on both height and weight, this allows the ASE's BSA-indexed
+            reference values to be plotted across the height range alongside the
+            other height-indexed references.
           </p>
           <p>
-            The JACC (CMR) area-for-height reference values were calculated and then converted to diameter.
+            The JACC (CMR) area-for-height reference values were calculated and
+            then converted to diameter.
           </p>
           <h3>Why These Differ</h3>
           <p>
@@ -299,7 +313,7 @@
               (diameter/BSA ratio). There is no age adjustment in these
               reference values. This form of scaling results in a
               <strong>counterintuitive relationship</strong> where the ULN for
-              females is greater than for males. 
+              females is greater than for males.
             </li>
           </ul>
 
